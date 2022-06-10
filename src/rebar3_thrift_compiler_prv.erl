@@ -1,7 +1,5 @@
 -module(rebar3_thrift_compiler_prv).
 
--include("otp_19_compatibility.hrl").
-
 -export([compile/3]).
 -export([clean/2]).
 
@@ -23,10 +21,11 @@ compile(AppInfo, CmdOpts, State) ->
     try
         ok = compile_files(InFiles, OutDirs, Opts),
         ok = distribute_files(OutDirs)
-    catch ?STACKTRACE(C, E, Stacktrace)
-        % is it ok for now to depend on the fact that rebar aborts via exceptions?
-        _ = cleanup(OutDirs),
-        erlang:raise(C, E, Stacktrace)
+    catch
+        C:E:Stacktrace ->
+            % is it ok for now to depend on the fact that rebar aborts via exceptions?
+            _ = cleanup(OutDirs),
+            erlang:raise(C, E, Stacktrace)
     end.
 
 -spec clean(rebar_app_info:t(), command_args()) -> ok.
