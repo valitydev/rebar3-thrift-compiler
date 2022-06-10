@@ -30,8 +30,7 @@ init(State) ->
             "    {out_erl_dir, \"src\"},    % where *.erl files reside\n"
             "    {out_hrl_dir, \"include\"} % where *.hrl files reside\n"
             "  ]}."
-            "\n"
-        },
+            "\n"},
         {opts, opts()}
     ]),
     {ok, rebar_state:add_provider(State, Provider)}.
@@ -40,12 +39,10 @@ opts() ->
     [
         {out_erl_dir, $o, "erlout", string,
             "Directory where generated *.erl files reside, relative to application output directory"
-            " (default = \"src\")"
-        },
+            " (default = \"src\")"},
         {out_hrl_dir, $O, "hrlout", string,
             "Directory where generated *.hrl files reside, relative to application output directory"
-            " (default = \"include\")"
-        }
+            " (default = \"include\")"}
     ].
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
@@ -53,7 +50,7 @@ opts() ->
 do(State) ->
     CmdOpts = rebar_state:command_parsed_args(State),
     ok = lists:foreach(
-        fun (AppInfo) -> rebar3_thrift_compiler_prv:clean(AppInfo, CmdOpts) end,
+        fun(AppInfo) -> rebar3_thrift_compiler_prv:clean(AppInfo, CmdOpts) end,
         get_apps(State)
     ),
     {ok, State}.
@@ -68,7 +65,7 @@ get_apps(State) ->
             [AppInfo]
     end.
 
--spec format_error(any()) ->  iolist().
+-spec format_error(any()) -> iolist().
 
 format_error(Reason) ->
     io_lib:format("~p", [Reason]).
