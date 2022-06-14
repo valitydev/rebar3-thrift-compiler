@@ -58,9 +58,17 @@ compile_one(InFile, {OutErlDir, _OutHrlDir}, Opts) ->
 
 construct_command(InFile, OutErlDir, Opts) ->
     CmdFrags =
-        ["thrift", "-r", "--gen", get_opt(gen, Opts) | get_includes(Opts)] ++
+        ["thrift"] ++
+            ["-r" || get_opt(recursive, Opts)] ++
+            ["-s" || get_opt(strict, Opts)] ++
+            ["--gen", get_opt(gen, Opts)] ++
+            construct_includes(Opts) ++
             ["--out", OutErlDir, InFile],
     string:join(CmdFrags, " ").
+
+construct_includes(Opts) ->
+    Dirs = get_opt(include_dirs, Opts),
+    lists:foldr(fun(Dir, Acc) -> ["-I", Dir | Acc] end, [], Dirs).
 
 distribute_files({OutErlDir, OutHrlDir}) ->
     Paths = find_generated_files([OutErlDir]),
@@ -167,7 +175,9 @@ get_default_opts() ->
         {out_erl_dir, "src"},
         {out_hrl_dir, "include"},
         {include_dirs, []},
-        {gen, "erl"}
+        {gen, "erl"},
+        {recursive, false},
+        {strict, false}
     ].
 
 get_in_files(Root, Opts) ->
@@ -192,10 +202,6 @@ get_opt(K, Opts) ->
     _ = validate_opt(K, V) orelse rebar_api:abort("Invalid `~p` value: ~p", [K, V]),
     V.
 
-get_includes(Opts) ->
-    Dirs = get_opt(include_dirs, Opts),
-    [string:join(["-I", Dir], " ") || Dir <- Dirs].
-
 validate_opt(K, V) when K == in_dir orelse K == out_erl_dir orelse K == out_hrl_dir ->
     validate_path(V);
 validate_opt(in_files, all) ->
@@ -206,6 +212,10 @@ validate_opt(include_dirs, V) ->
     is_list(V) andalso lists:all(fun validate_path/1, V);
 validate_opt(gen, V) ->
     io_lib:printable_list(V);
+validate_opt(recursive, V) ->
+    is_boolean(V);
+validate_opt(strict, V) ->
+    is_boolean(V);
 validate_opt(_, _) ->
     false.
 
