@@ -12,7 +12,7 @@ DOTENV := $(shell grep -v '^\#' .env)
 
 DOCKER ?= docker
 REBAR ?= rebar3
-TEST_CONTAINER_NAME ?= testrunner
+TEST_CONTAINER_NAME ?= rebar3-thrift-compiler
 
 all: compile
 
@@ -56,7 +56,7 @@ compile:
 	$(REBAR) compile
 
 xref:
-	$(REBAR) xref
+	$(REBAR) as test xref
 
 lint:
 	$(REBAR) lint
@@ -66,9 +66,6 @@ check-format:
 
 dialyze:
 	$(REBAR) as test dialyzer
-
-release:
-	$(REBAR) as prod release
 
 eunit:
 	$(REBAR) eunit --cover
