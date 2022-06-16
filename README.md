@@ -12,7 +12,7 @@ Add the plugin to your `rebar.config`:
 
 ```erlang
 {plugins, [
-    {rebar3_thrift_compiler, {git, "https://github.com/rbkmoney/rebar3_thrift_compiler.git", {tag, "0.4"}}}
+    {rebar3_thrift_compiler, {git, "https://github.com/valitydev/rebar3-thrift-compiler.git", {tag, "0.4"}}}
 ]}.
 ```
 
