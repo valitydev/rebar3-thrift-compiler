@@ -28,16 +28,32 @@ init(State) ->
             "\n\n"
             "Options available in `rebar.config`:"
             "\n\n"
+            % Strive to keep in sync with README.md
             "  {thrift_compiler_opts, [\n"
-            "    {in_dir, \"proto\"},                 % where *.thrift located\n"
-            "    {in_files, [\"file1.thrift\", ...]}, % explicit list of files to compile\n"
-            "    {out_erl_dir, \"src\"},              % where *.erl files fall\n"
-            "    {out_hrl_dir, \"include\"},          % where *.hrl files fall\n"
-            "    {include_dirs, []},                % list of directories searched for includes\n"
-            "    {gen, \"erl:legacy_names\"}          % what generator to invoke\n"
+            "    % Directory where *.thrift files are located, relative to application root\n"
+            "    {in_dir, \"proto\"},\n"
+            "    % Explicit list of files to compile instead of every single *.thrift file"
+            "    % found inside the `in_dir`\n"
+            "    {in_files, [\"file1.thrift\", ...]},\n"
+            "    % Directory to put all generated *.erl files into, relative to application"
+            "    % output directory\n"
+            "    {out_erl_dir, \"src\"},\n"
+            "    % Directory to put all generated *.hrl files into, relative to application"
+            "    % output directory\n"
+            "    {out_hrl_dir, \"include\"},\n"
+            "    % List of directories searched for include directives\n"
+            "    {include_dirs, []},\n"
+            "    % Generator (with arbitrary flags) to use when compiling *.thrift files\n"
+            "    {gen, \"erl:legacy_names\"},\n"
+            "    % Tell compiler to generate code recursively (i.e. generate module for each"
+            "    % transitively included thrift file)\n"
+            "    % [default: false]\n"
+            "    {recursive, true},\n"
+            "    % Tell compiler to run in strict mode (will emit warnings more often)\n"
+            "    % [default: false]\n"
+            "    {strict, true}\n"
             "  ]}."
-            "\n"
-        },
+            "\n"},
         {opts, opts()}
     ]),
     {ok, rebar_state:add_provider(State, Provider)}.
@@ -46,20 +62,16 @@ opts() ->
     [
         {in_dir, $I, "in", string,
             "Directory where *.thrift files are located, relative to application root"
-            " (default = \"proto\")"
-        },
+            " (default = \"proto\")"},
         {out_erl_dir, $o, "erlout", string,
             "Directory to put all generated *.erl files into, relative to application output directory"
-            " (default = \"src\")"
-        },
+            " (default = \"src\")"},
         {out_hrl_dir, $O, "hrlout", string,
             "Directory to put all generated *.hrl files into, relative to application output directory"
-            " (default = \"include\")"
-        },
+            " (default = \"include\")"},
         {gen, $g, "gen", string,
             "Generator (with flags) to use when compiling *.thrift files"
-            " (default = \"erl\")"
-        }
+            " (default = \"erl\")"}
     ].
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
@@ -70,7 +82,7 @@ do(State) ->
     rebar_hooks:run_all_hooks(Cwd, pre, thrift, Providers, State),
     CmdOpts = rebar_state:command_parsed_args(State),
     ok = lists:foreach(
-        fun (AppInfo) -> rebar3_thrift_compiler_prv:compile(AppInfo, CmdOpts, State) end,
+        fun(AppInfo) -> rebar3_thrift_compiler_prv:compile(AppInfo, CmdOpts, State) end,
         get_apps(State)
     ),
     {ok, State}.
@@ -85,7 +97,7 @@ get_apps(State) ->
             [AppInfo]
     end.
 
--spec format_error(any()) ->  iolist().
+-spec format_error(any()) -> iolist().
 
 format_error(Reason) ->
     io_lib:format("~p", [Reason]).

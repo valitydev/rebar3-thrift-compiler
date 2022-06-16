@@ -7,19 +7,19 @@
 
 %%
 
--spec assert_file(filelib:filename()) -> filelib:filename().
+-spec assert_file(file:name()) -> file:name().
 
 assert_file(Path) ->
     true = filelib:is_file(Path) orelse rebar_api:abort("Not regular file: ~s", [Path]),
     Path.
 
--spec assert_dir(filelib:dirname()) -> filelib:dirname().
+-spec assert_dir(_DirName :: file:name()) -> file:name().
 
 assert_dir(Dir) ->
     true = filelib:is_dir(Dir) orelse rebar_api:abort("Not directory: ~s", [Dir]),
     Dir.
 
--spec ensure_dir(filelib:dirname()) -> ok.
+-spec ensure_dir(_DirName :: file:name()) -> ok.
 
 ensure_dir(Dir) ->
     {ok, RealDir} = rebar3_thrift_compiler_utils:realpath(Dir),
@@ -28,7 +28,7 @@ ensure_dir(Dir) ->
         {error, eexist} -> assert_dir(RealDir)
     end.
 
--spec realpath(filelib:filename()) -> {ok, filelib:filename()} | {error, invalid | notsup}.
+-spec realpath(file:name()) -> {ok, file:name()} | {error, invalid | notsup}.
 
 realpath(Path) ->
     get_realpath(rebar_file_utils:canonical_path(Path), []).

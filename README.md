@@ -12,7 +12,7 @@ Add the plugin to your `rebar.config`:
 
 ```erlang
 {plugins, [
-    {rebar3_thrift_compiler, {git, "https://github.com/rbkmoney/rebar3_thrift_compiler.git", {tag, "0.1"}}}
+    {rebar3_thrift_compiler, {git, "https://github.com/rbkmoney/rebar3_thrift_compiler.git", {tag, "0.4"}}}
 ]}.
 ```
 
@@ -58,15 +58,31 @@ Full list of options you can change to your taste, you can always fire `rebar3 h
 {thrift_compiler_opts, [
     % Directory where *.thrift files are located, relative to application root
     {in_dir, "proto"},
-    % Explicit list of files to compile instead of every single *.thrift file found inside the `in_dir`
+    % Explicit list of files to compile instead of every single *.thrift file
+    % found inside the `in_dir`
     {in_files, ["file1.thrift", ...]},
-    % Directory to put all generated *.erl files into, relative to application output directory
+    % Directory to put all generated *.erl files into, relative to application
+    % output directory
     {out_erl_dir, "src"},
-    % Directory to put all generated *.hrl files into, relative to application output directory
+    % Directory to put all generated *.hrl files into, relative to application
+    % output directory
     {out_hrl_dir, "include"},
     % List of directories searched for include directives
     {include_dirs, []},
     % Generator (with arbitrary flags) to use when compiling *.thrift files
-    {gen, "erl:legacy_names"}
+    {gen, "erl:legacy_names"},
+    % Tell compiler to generate code recursively (i.e. generate module for each
+    % transitively included thrift file)
+    % [default: false]
+    {recursive, true},
+    % Tell compiler to run in strict mode (will emit warnings more often)
+    % [default: false]
+    {strict, true}
 ]}.
 ```
+
+## Notable changes
+
+### Version 0.4
+
+ * [BREAKING] Recursive code generation is now **off** by default.
